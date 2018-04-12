@@ -10,8 +10,9 @@ from requests import get
 from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup
+import re
 
-TARGET_URL = "http://www.imdb.com/search/title?num_votes=5000,&sort=user_rating,desc&start=1&title_type=tv_series"
+TARGET_URL = "http://www.imdb.com/search/title?num%5Fvotes=5000,&sort=user%5Frating,desc&title%5Ftype=tv%5Fseries"
 BACKUP_HTML = 'tvseries.html'
 OUTPUT_CSV = 'tvseries.csv'
 
@@ -26,13 +27,56 @@ def extract_tvseries(dom):
     - Actors/actresses (comma separated if more than one)
     - Runtime (only a number!)
     """
+    
+    # initiate output list
+    tvseries = []
 
-    # ADD YOUR CODE HERE TO EXTRACT THE ABOVE INFORMATION ABOUT THE
-    # HIGHEST RATED TV-SERIES
-    # NOTE: FOR THIS EXERCISE YOU ARE ALLOWED (BUT NOT REQUIRED) TO IGNORE
-    # UNICODE CHARACTERS AND SIMPLY LEAVE THEM OUT OF THE OUTPUT.
+    # loop through content in html file
+    for content in dom.find_all('div', class_="lister-item-content"):
 
-    return []   # REPLACE THIS LINE AS WELL AS APPROPRIATE
+        # initiate list for single serie
+        serieinfo = []
+        
+        # add serie title to list
+        serieinfo.append(content.h3.a.text)
+
+        # add rating of serie to list
+        for rating in content.find_all(class_ = "inline-block ratings-imdb-rating"):
+            serieinfo.append(rating.get_text(strip=True))
+
+        # add genre of serie to list
+        for genre in content.find_all(class_ = "genre"):
+            serieinfo.append(genre.get_text(strip=True))
+
+        # create string to list all actors/actresses of serie
+        actstr = ""
+        
+        # add actor/actress to actor-string
+        for actors in content.find_all(class_ = "", href=re.compile("name")):
+            actstr += actors.text + ", "
+
+        # delete last comma from actor-string
+        actstr = re.sub('\, $', '', actstr)
+        
+        # add actor-string to list
+        serieinfo.append(actstr)
+
+        # check if the runtime of serie is known
+        runningtime = content.find_all(class_ = "runtime")
+        if not runningtime:
+            serieinfo.append("runtime unknown")
+        # if runtime is known, add the number of minutes of serie to list
+        else:
+            for runtime in runningtime:
+                runtimestr = runtime.text
+                runtimestr = re.sub('\ min$', '', runtimestr)
+                serieinfo.append(runtimestr)
+
+        # nest list of single serie in list of tv-series
+        tvseries.append(serieinfo)
+
+    # return list of tv-series
+    return tvseries
 
 
 def save_csv(outfile, tvseries):
@@ -42,8 +86,10 @@ def save_csv(outfile, tvseries):
     writer = csv.writer(outfile)
     writer.writerow(['Title', 'Rating', 'Genre', 'Actors', 'Runtime'])
 
-    # ADD SOME CODE OF YOURSELF HERE TO WRITE THE TV-SERIES TO DISK
-
+    i = 0
+    for serie in range(0,len(tvseries)):
+        writer.writerow([tvseries[i][0], tvseries[i][1], tvseries[i][2], tvseries[i][3], tvseries[i][4]])
+        i += 1
 
 def simple_get(url):
     """
