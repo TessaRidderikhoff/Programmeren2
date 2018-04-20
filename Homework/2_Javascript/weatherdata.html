@@ -6,6 +6,8 @@
 </head>
 <body>
 
+	<h1 style = "font-family:arial"> De Bilt: hoe was het weer in 2017? </h1>
+
 <textarea id="rawdata" style="display:none">
 	  20170101,    5
 	  20170102,   30
@@ -373,12 +375,17 @@
 	  20171230,   88
 	  20171231,  106
 </textarea>
-<canvas id="Weathergraph" width="1200" height="800">
+<canvas id="crosshair" width="1200" height="800" style = "z-index: 1; position: absolute; left: 0px; top: 80px;">
 
 </canvas>
+<canvas id="weatherGraph" width="1200" height="800" onmousemove="getMouseLocation(event)" style="z-index: 2; position: absolute; left: 0px; top: 80px;">
+
+</canvas>
+
 </body>
 
 <script>
+
 	weatherdata = document.getElementById("rawdata");
 	weatherdata = weatherdata.innerHTML.split("\n");
 	for (i = 0; i < weatherdata.length - 1; i++) {
@@ -400,8 +407,10 @@
 	// var tempTransform = createTransform(dom,ran)
 	// tempTransform(15)
 
-	var canvas = document.getElementById('Weathergraph'); // in your HTML this element appears as <canvas id="myCanvas"></canvas>
+	var canvas = document.getElementById('weatherGraph'); 
+	var topcanvas = document.getElementById("crosshair");
 	var ctx = canvas.getContext('2d');
+	var ctx2 = topcanvas.getContext('2d');
 
 
 function createTransform(domain, range){
@@ -432,68 +441,150 @@ highesttemp = Math.max(...temp);
 // console.log(lowesttemp);
 // console.log(highesttemp);
 
-var tempTransform = createTransform([lowesttemp, highesttemp], [600, 0])
+// determine canvasheight & width
+var cWidth = 1200;
+var cHeight = 800;
+var graphHeight = 600;
+var graphWidth = 1095;
+var axisWidth = 105;
+var axisHeigth = 200;
+
+var tempTransform = createTransform([lowesttemp, highesttemp], [graphHeight, 0])
 
 temptrans = [];
 for (i = 0; i < temp.length; i++) {
 	temptrans[i] = tempTransform(temp[i]);
 }
 
-datetrans = [];
+datems = [];
 for (i = 0; i < date.length; i++) {
-	datetrans[i] = date[i].getTime();
-	datetrans[i] = (((datetrans[i] - 1483228800000) / 86400000)*3)+50;
-	// console.log(datetrans[i])
+	datems[i] = date[i].getTime();
 }
 
-// draw x-axis
-ctx.beginPath();
-ctx.moveTo(1145, 600);
-ctx.lineTo(50,600);
-ctx.stroke();
+var dateTransform = createTransform([datems[0], datems[364]], [axisWidth, cWidth])
 
-// draw y-axis
+datetrans = [];
+for (i = 0; i < date.length; i++) {
+	datetrans[i] = dateTransform(datems[i]);
+}
+
+// draw x- and y-axis
 ctx.beginPath();
-ctx.moveTo(50, 0);
-ctx.lineTo(50,600);
+ctx.moveTo(cWidth, graphHeight);
+ctx.lineTo(axisWidth, graphHeight);
+ctx.lineTo(axisWidth, 0);
 ctx.stroke();
 
 // draw data in graph
 ctx.beginPath();
-ctx.moveTo(50, 600);
-ctx.lineTo(datetrans[0], temptrans[0]);
-for (i = 1; i < 365; i++) {
+ctx.moveTo(datetrans[0], temptrans[0]);
+for (i = 1; i < date.length; i++) {
 	ctx.lineTo(datetrans[i], temptrans[i]);
 }
 ctx.stroke();
 
 // draw grid y-axis
+
+// create vector for temperatures to display
+axistemps = [];
+for (i = 0; i <= 10; i++) {
+	axistemps[i] = (lowesttemp + ((highesttemp - lowesttemp) / 10) * i)/10;
+	axistemps[i] = axistemps[i].toFixed(1);
+}
+
+gridpoint = 0;
 ctx.beginPath();
-for (i = 600; i >= 0; i -= 100) {
-	ctx.moveTo(50,i);
-	ctx.lineTo(30,i);
+for (i = graphHeight; i >= 0; i -= (graphHeight/10)) {
+	ctx.moveTo(axisWidth, i);
+	ctx.lineTo((axisWidth - 20), i);
+	ctx.font = "15px arial";
+	ctx.fillText(axistemps[gridpoint] + " \u00B0C", (axisWidth - 70), i + 15);
+	gridpoint += 1;
 }
 ctx.stroke();
 
-months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", ""];
 month = 0;
+dateaxis = [];
+for (i = 0; i < date.length; i++) {
+	if (String(date[i]).substr(8, 2) == "01") {
+		dateaxis[month] = i;
+		month += 1;
+	}
+}
 // draw grid x-axis
+month = 0;
+counter = 0;
 ctx.beginPath();
-for (i = 50; i <= 1145; i += 91.25) {
-	ctx.moveTo(i, 620);
-	ctx.lineTo(i,600);
-	ctx.font = "15px arial"
-	ctx.fillText(months[month], i, 640);
-	month += 1;
+for (i = axisWidth; i <= cWidth; i += (graphWidth / 365)) {
+	if (counter == dateaxis[month]){
+		ctx.moveTo(i, graphHeight);
+		ctx.lineTo(i, (graphHeight + 20));
+		ctx.font = "15px arial"
+		datepoint = String(date[dateaxis[month]]).substr(4, 11);
+		ctx.fillText(datepoint, i, (graphHeight + 40));
+		month += 1;
+	}
+	counter += 1;
 }
 ctx.stroke();
 
-ctx.font = "20px arial"
+ctx.font = "20px arial";
 ctx.fillText("Months of 2017", 1000, 680);
 
+var weathercanvas = canvas.getBoundingClientRect();
 
+var getDatePoint = createTransform([axisWidth, cWidth], [date[0], date[364]]);
 
+function getMouseLocation(e) {
+    ctx2.clearRect(0, 0, 1200, 800);
 
+    var mouseX = e.clientX - weathercanvas.left;
+    var mouseY = e.clientY - weathercanvas.top;
+
+    var milisecDate = getDatePoint(mouseX);
+    var clickeddate = new Date(milisecDate);
+    // console.log(clickeddate);
+
+	ctx2.beginPath();
+	ctx2.moveTo(mouseX, graphHeight);
+	ctx2.lineTo(mouseX, 0);
+	ctx2.stroke();
+
+	closestDate = 10000000000000000;
+
+	for (i = 0; i < date.length; i++) {
+		difDate = Math.abs(milisecDate - datems[i]);
+		if (difDate < closestDate) {
+			closestDate = difDate;
+			var thisDate = i;
+		}
+	}
+	thisTemp = temp[thisDate];
+	thisTempTrans = tempTransform(thisTemp);
+
+	ctx2.beginPath();
+	ctx2.moveTo(axisWidth, thisTempTrans);
+	ctx2.lineTo(graphWidth, thisTempTrans);
+	ctx2.stroke();
+
+	ctx2.strokeStyle = 'blue';
+	ctx2.ellipse(mouseX, thisTempTrans, 10, 10, 0, 0, 2 * Math.PI);
+	ctx2.stroke();
+
+	tempInfo = "Temp: " + (thisTemp/10) + " \u00B0C";
+	dateInfo = "Date: " + String(clickeddate).substr(0, 15);
+	ctx2.font = "15px arial";
+	ctx2.fillText(dateInfo, axisWidth + 10, 20);
+	ctx2.fillText(tempInfo, axisWidth + 10, 50);
+
+	// ctx2.stroke();
+}
+
+// ctx.save();
+// ctx.font = "18px arial";
+// ctx.rotate(-Math.PI/2);
+// ctx.fillText("Temperature (in celsius)", (axisWidth/2), graphHeight/2);
+// ctx.restore();
 
 
 </script>
