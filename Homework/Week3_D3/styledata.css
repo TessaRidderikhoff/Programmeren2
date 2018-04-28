@@ -1,0 +1,42 @@
+/*
+Tessa Ridderikhoff
+10759697
+28-04-2018
+
+styledata.css
+
+Style sheet for index.html
+*/
+
+body {
+  font: 11px sans-serif;
+}
+
+.title {
+	font: 18px sans-serif;
+	fill: black;
+}
+
+.subtitle {
+	font: 12px sans-serif;
+}
+
+.axis path,
+.axis line {
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+
+.tick line {
+	display: none;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}

@@ -1,0 +1,209 @@
+<!-- 
+Tessa Ridderikhoff
+10759697
+28-04-2018
+
+index.html
+This html page contains the code for creating a bar chart of the percentage of organ donors in the Netherlands, for each age group. 
+
+Sources:
+d3 tutorial: http://alignedleft.com/tutorials/d3/
+tooltips: http://bl.ocks.org/Caged/6476579
+ -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="styledata.css">
+  </head>
+  <body>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+    <script>
+      window.onload = function() {
+
+        // determine graph properties
+        var graphWidth = 800;
+        var graphHeight = 400;
+        
+        // determine space between bars
+        var barpadding = 6;
+
+        // determine space around graph
+        var margin = {top: 30, right: 20, bottom: 40, left: 40};
+
+        var width = 800 - margin.left - margin.right;
+        var height = 400 - margin.top - margin.bottom;
+
+        // create title
+        d3.select("head")
+          .append("title")
+          .text("Donors in Nederland");
+        
+        // create title of graph
+        d3.select("body")
+          .append("h1")
+          .attr("class", "title")
+          .text("Percentage goedkeuring orgaandonatie in Nederland per leeftijdsgroep");
+        
+        // create subtitle for information about the graph
+        d3.select("body")
+          .append("p")
+          .attr("class", "subtitle")
+          .html("Deze bargraph geeft het percentage weer van de mensen die goedkeuring hebben gegeven om hun organen te doneren, per leeftijdsgroep. <br>Tessa Ridderikhoff <br> Studentnummer: 10759697 <br>");
+
+        // create link to data source
+        d3.select("p")
+          .append("a")
+          .attr("href", "https://opendata.cbs.nl/statline/portal.html?_catalog=CBS&_la=nl&tableId=82814NED&_theme=145")
+          .html("Bron: CBS donorregistratie")
+
+        // load json file to use the dataset
+        d3.json("donors.json", function(data) {
+          
+          // create svg
+          var svg = d3.select("body")
+            .append("svg")
+            .attr("id", "graphSVG")
+            .attr("width", graphWidth)
+            .attr("height", graphHeight);
+
+          // determine maximum value of data
+          var max = d3.max(data, function(d) {
+            return d.Percentage_goedkeuring;
+          })
+
+          // determine x-scale (for x-axis)
+          var xScale = d3.scale.linear()
+            .domain([-0.5, 8.5])
+            .range([margin.left, graphWidth]);
+          
+          // determine y-scale to transform the data
+          var yScale = d3.scale.linear()
+            .domain([0, max])
+            .range([margin.top, graphHeight - margin.bottom]);
+
+          // determine scale for y-axis (range opposite to y-scale)
+          var axisScale = d3.scale.linear()
+            .domain([0, max])
+            .range([graphHeight - margin.bottom, margin.top])
+
+          // create tooltip (source: http://bl.ocks.org/Caged/6476579)
+          var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function(d) {
+              return "<strong>Percentage goedkeuring donatie:</strong> <span style='color:red'>" + d.Percentage_goedkeuring + "</span>";
+            })
+
+          // call the tooltip
+          svg.call(tip);
+
+          // determine number of bars
+          var bars = 9;
+
+          // create bars
+          var bar = svg.selectAll("rect")
+            .data(data).enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("height", function(d, i) {
+              return yScale(d.Percentage_goedkeuring) - margin.top;
+            })
+            .attr("width", graphWidth / bars - barpadding)
+            .attr("x", function(d, i) {
+              return i * ((graphWidth - margin.left) / bars) + margin.left;
+            })
+            .attr("y", function(d) {
+              return (graphHeight - margin.bottom) - (yScale(d.Percentage_goedkeuring) - margin.top);
+            })
+
+            // bar is brighter red when a higher percentage of people is organdonor
+            .attr("fill", function(d) {
+              return "rgb(" + d.Percentage_goedkeuring * 8 + ", 0, 0)";
+            })
+
+            // create interactivity of bars
+            bar.on("mouseover", function(d) {
+              
+              // show tooltip
+              tip.show(d);
+              
+              // change opacity of the bars that are not selected
+              var self = this;
+              d3.selectAll(".bar").filter(function() {
+                return self != this;
+              }).transition()
+              .style("opacity", .4)
+
+            // change settings of bars back to normal when the mouse no longer
+            // selects the bar
+            }).on("mouseout", function(d) {
+              tip.hide(d);
+              d3.selectAll(".bar")
+              .transition()
+              .style("opacity", 1)
+            });
+
+
+          // determine labels for x-axis
+          var xAges = ["12-18", "18-20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"];
+
+          // couple x-axis label to datapoints 
+          var xLabels = function(d) {
+            return xAges[d % 9] + " jaar"
+          }
+
+          // set x-axis
+          var xAxis = d3.svg.axis()
+            .scale(xScale)
+            .orient("bottom")
+            .tickFormat(xLabels)
+
+            // remove outer ticks
+            .outerTickSize(0);
+
+          // create x-axis
+          svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(0, " + (graphHeight - (margin.bottom)) + ")")
+            .call(xAxis);
+
+          // set y-axis
+          var yAxis = d3.svg.axis()
+            .scale(axisScale)
+            .orient("left")
+
+            // remove outer ticks
+            .outerTickSize(0);
+
+          // create y-axis
+          svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate("+ margin.bottom + ", 0)")
+            .call(yAxis);
+
+          // create y-axis title (rotated)
+          svg.append("g")
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0)
+            .attr("x", -margin.bottom)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Percentage bevolking goedkeuring orgaandonatie (in %)");
+
+          // create x-axis title
+          svg.append("g")
+          .append("text")
+            .attr("y", graphHeight - 5)
+            .attr("x", graphWidth - 70)
+            .text("Leeftijdsgroep");
+
+        });
+
+    }
+
+  </script>
+  </body>
+</html>
