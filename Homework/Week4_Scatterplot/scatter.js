@@ -13,9 +13,9 @@ tooltips: http://bl.ocks.org/Caged/6476579
 window.onload = function() {
 
 	// request API from OECD
-	var unemploymentPercentage = "http://stats.oecd.org/SDMX-JSON/data/DUR_I/AUS+AUT+BEL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+JPN+LVA+LUX+NLD+NZL+POL+PRT+SVN+ESP+SWE+GBR+LTU.MW.900000.UN1+UN2+UN3+UN4+UN5.A/all?startTime=2010&endTime=2013&dimensionAtObservation=allDimensions"
-	var discouragedWorkers = "http://stats.oecd.org/SDMX-JSON/data/DW_I/AUS+AUT+BEL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+JPN+LVA+LUX+NLD+NZL+POL+PRT+SVN+ESP+SWE+GBR+LTU.MW.900000.YES.DISLF.A/all?startTime=2010&endTime=2013&dimensionAtObservation=allDimensions"
-	var unemploymentAmount = "http://stats.oecd.org/SDMX-JSON/data/DUR_D/AUS+AUT+BEL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+JPN+LVA+LUX+NLD+NZL+POL+PRT+SVN+ESP+SWE+GBR+LTU.MW.900000.UN1+UN2+UN3+UN4+UN5.A/all?startTime=2010&endTime=2013&dimensionAtObservation=allDimensions"
+	var unemploymentPercentage = "https://stats.oecd.org/SDMX-JSON/data/DUR_I/AUS+AUT+BEL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+JPN+LVA+LUX+NLD+NZL+POL+PRT+SVN+ESP+SWE+GBR+LTU.MW.900000.UN1+UN2+UN3+UN4+UN5.A/all?startTime=2010&endTime=2013&dimensionAtObservation=allDimensions"
+	var discouragedWorkers = "https://stats.oecd.org/SDMX-JSON/data/DW_I/AUS+AUT+BEL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+JPN+LVA+LUX+NLD+NZL+POL+PRT+SVN+ESP+SWE+GBR+LTU.MW.900000.YES.DISLF.A/all?startTime=2010&endTime=2013&dimensionAtObservation=allDimensions"
+	var unemploymentAmount = "https://stats.oecd.org/SDMX-JSON/data/DUR_D/AUS+AUT+BEL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+JPN+LVA+LUX+NLD+NZL+POL+PRT+SVN+ESP+SWE+GBR+LTU.MW.900000.UN1+UN2+UN3+UN4+UN5.A/all?startTime=2010&endTime=2013&dimensionAtObservation=allDimensions"
 
 	// create title
 	d3.select("body")
