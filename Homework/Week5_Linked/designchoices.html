@@ -1,0 +1,55 @@
+<!-- 
+Tessa Ridderikhoff
+10759697
+designchoices.html
+
+This page contains the explanations about the design choices used for the datavisualisation. 
+ -->
+<!DOCTYPE html>
+<html>
+  <head>
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <!-- create navigation bar -->
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="linked.html">Gender Inequality data visualisation</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li><a href="aboutdata.html">About the data</a></li>
+            <li><a href="designchoices.html">Design choices</a></li>
+            <li><a href="sources.html">Sources</a></li>
+          </ul>
+
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+
+    <!-- display explanation design choices -->
+    <ul><h4>Design choices</h4></ul>
+
+    <p>
+      <ul> Map: the colours of the map range from yellow (GII = 0) to red (GII = 1). This has been chosen because the difference between yellow and red is clear, and nuances in the GII can clearly be shown. Red has been chosen as the colour for a high GII since red is often associated with negativity, and I wanted to depict gender inequality as negative as well. Yellow has been chosen because this is a lighter colour, depicting a lower score, and has a more positive feeling associated with it. Naturally, I wanted to depict less inequality as more positive in this visualisation. </ul>
+      <ul> The tooltip when hovering over the map shows the name of the country, and the GII. This information is given because the exact GII is not clear when viewing just the colour of the legend.  </ul>
+      <ul> The bar graph is automatically set to display the data of the Netherlands, since the visualisation is made here and will therefore likely interest the viewers of the graphs. It can be updated to other countries by pressing on the country on the map. </ul>
+      <ul> The bar graph shows the average years of education for women and men separetely, to highlight the difference in this. The colour to depict the men is blue, since this colour is often associated with men, and the colour for women is red, as this might be considered more feminine. These colours are also explained in a legend next to the bar graph. </ul>
+      <ul> When hovering over the legend, all the values are displayed for the selected category. This has been chosen to give a clear overview of the amount of increase (or decrease) of average years of education over the years for that gender. </ul>
+      <ul> When hovering over the bar in the bar graph, a tooltip is shown as well. This has been chosen to give the exact value of that bar graph. </ul>
+      <ul> The x-axis consists of buttons, which are able to update the world map. The buttons are made with bootstrap, of category 'link'. This has been chosen because this way it is more clear that these are buttons, without being distracting as an axis. </ul>
+    </p>
+
+  </body>
+</html>

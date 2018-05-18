@@ -1,0 +1,61 @@
+/*
+Tessa Ridderikhoff
+10759697
+linked.css
+
+This file determines the style of linked.html, for the background, the font and graph choices.
+*/
+
+body {
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	font-size: 11px;
+	background-color: aliceblue;
+}
+
+.country {
+	stroke: white;
+	stroke-width: 0.2px;
+}
+
+.country:hover {
+	stroke: white;
+	stroke-width: 1px;
+}
+
+.d3-tip {
+	background: rgba(255, 255, 255, 0.8);
+	opacity: 0.5;
+	border-radius: 5px;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+.axistitle {
+	font-weight: bold;
+}
+
+.bartip {
+	background: red;
+	opacity: 1;
+	border-radius: 5px;
+}
+
+.bartext {
+	font-size: 10px;
+	fill: white;
+}
+
+.graphtitle {
+	font-size: 30px;
+	fill: steelblue;
+}
